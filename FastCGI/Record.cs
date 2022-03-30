@@ -23,6 +23,7 @@ namespace FastCGI
         /// <remarks>
         /// Described in the FastCGI Specification section 8.
         /// </remarks>
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
         public enum RecordType : byte
         {
             BeginRequest = Constants.FCGI_BEGIN_REQUEST,
@@ -50,6 +51,7 @@ namespace FastCGI
             Overloaded = Constants.FCGI_OVERLOADED,
             UnknownRole = Constants.FCGI_UNKNOWN_ROLE
         }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 
         /// <summary>
         /// The version byte. Should always equal <see cref="Constants.FCGI_VERSION_1"/>.
@@ -116,6 +118,9 @@ namespace FastCGI
             return nameValuePairs;
         }
 
+        /// <summary>
+        /// Tries to read a dictionary of name-value pairs from the <see cref="ContentData"/>
+        /// </summary>
         public Dictionary<string, byte[]> GetNameValuePairs()
         {
             return ReadNameValuePairs(new MemoryStream(ContentData));
@@ -274,11 +279,11 @@ namespace FastCGI
                 }
 
             }
-            catch (EndOfStreamException e)
+            catch (EndOfStreamException)
             {
                 throw new InvalidDataException("Unexpected end of stream. Incomplete record transmitted or corrupted data.");
             }
-            catch (IOException e)
+            catch (IOException)
             {
                 // Connection has been closed, or an other error occured whie reading a record. Return a null record.
                 return null;
@@ -391,11 +396,17 @@ namespace FastCGI
             stream.Write(memStr.GetBuffer(), 0, recordSize);
         }
 
+        /// <summary>
+        /// Convert <see cref="Type"/> and <see cref="RequestId"/> to string
+        /// </summary>
         public override string ToString()
         {
             return "{Record type: " + Type.ToString() + ", requestId: " + RequestId.ToString() + "}";
         }
 
+        /// <summary>
+        /// Check Equals by <see cref="Version"/>, <see cref="Type"/>, <see cref="RequestId"/>, <see cref="ContentLength"/> and <see cref="ContentData"/>
+        /// </summary>
         public override bool Equals(System.Object obj)
         {
             if (obj == null)
@@ -414,6 +425,14 @@ namespace FastCGI
                 && RequestId == r.RequestId
                 && ContentLength == r.ContentLength
                 && ContentData.SequenceEqual(r.ContentData);
-    }
+        }
+
+        /// <summary>
+        /// As in base class. Added for supress compiler warning
+        /// </summary>
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
     }
 }

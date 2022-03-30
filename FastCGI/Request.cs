@@ -251,6 +251,9 @@ namespace FastCGI
             WriteResponse(bytes);
         }
 
+        /// <summary>
+        /// Check open this request.
+        /// </summary>
         public bool IsOpen { get; protected set; } = true;
 
         /// <summary>

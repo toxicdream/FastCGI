@@ -34,6 +34,9 @@ namespace FastCGI
         /// </summary>
         public new Socket Socket { get { return base.Socket; } }
 
+        /// <summary>
+        /// Disconnect socket
+        /// </summary>
         public void Disconnect()
         {
             if (Socket != null)

@@ -22,8 +22,8 @@ namespace FastCGI
     /// In FastCGI terms, this class implements the responder role. Refer to section 6.2 of the FastCGI specification
     /// for details.
     /// 
-    /// Use <see cref="OnRequestReceived"/> to get notified of received requests. You can call <see cref="Run"/> to
-    /// enter an infinite loopand let the app handle everything.
+    /// Use <see cref="OnRequestReceived"/> to get notified of received requests. You can call <see cref="Run(int)"/> 
+    /// or <see cref="Run(IPEndPoint)"/> to enter an infinite loopand let the app handle everything.
     /// Alternatively, if you want to control the execution flow by yourself, call <see cref="Listen(int)"/> to start
     /// accepting connections. Then repeatedly call <see cref="Process"/> to handle incoming requests.
     /// 
@@ -172,7 +172,6 @@ namespace FastCGI
         }
 
         IAsyncResult AcceptAsyncResult;
-        bool AcceptIsReady;
 
         /// <summary>
         /// Processes all data available on the current FastCGI connection and handles the received data.
@@ -188,14 +187,13 @@ namespace FastCGI
             // When listening, but not currently connected, and not yet waiting for an incoming connection, start the connection accept
             if (ListeningSocket != null && AcceptAsyncResult == null)
             {
-                AcceptAsyncResult = ListeningSocket.BeginAccept((r) => { AcceptIsReady = true; }, null);
+                AcceptAsyncResult = ListeningSocket.BeginAccept((r) => { }, null);
             }
             
             if(AcceptAsyncResult != null && AcceptAsyncResult.IsCompleted)
             {
                 var connection = ListeningSocket.EndAccept(AcceptAsyncResult);
-                AcceptIsReady = false;
-                AcceptAsyncResult = ListeningSocket.BeginAccept((r) => { AcceptIsReady = true; }, null);
+                AcceptAsyncResult = ListeningSocket.BeginAccept((r) => { }, null);
                 
                 var stream = new FCGIStream(connection);
                 OpenConnections.Add(stream);
